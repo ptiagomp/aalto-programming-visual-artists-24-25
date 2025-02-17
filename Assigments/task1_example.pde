@@ -1,41 +1,37 @@
-// Setup your workspace and canvas
+// Interactive Sketch: Mouse Movement-based Color and Shape
+
 void setup() {
-  size(800, 600);          // Set canvas size to 800x600 pixels
-  noStroke();              // Disable shape outlines
+  // Set up the canvas size
+  size(800, 600);
+  // Disable outlines for shapes
+  noStroke();
 }
 
-// Continuously update the screen
 void draw() {
-  background(30, 30, 30);  // Set a dark background
-  
-  // Map mouseX and mouseY to color ranges
-  float redValue = map(mouseX, 0, width, 0, 255);
-  float greenValue = map(mouseY, 0, height, 0, 255);
-  float blueValue = map(mouseX + mouseY, 0, width + height, 255, 0);
+  // Background color changes dynamically based on mouseX and mouseY
+  background(mouseX / 3, mouseY / 2, (mouseX + mouseY) / 4);
 
-  // Draw a circle that follows the mouse with dynamic color
-  fill(redValue, greenValue, blueValue);
-  ellipse(mouseX, mouseY, 100, 100);
+  // Draw a circle that follows the mouse
+  fill(mouseY % 255, mouseX % 255, (mouseX + mouseY) % 255); // Dynamic color based on mouse position
+  ellipse(mouseX, mouseY, 50, 50); // Circle's position is tied to the mouse
 
-  // Draw a rectangle that changes size based on mouse position
-  float rectWidth = map(mouseX, 0, width, 50, 300);
-  float rectHeight = map(mouseY, 0, height, 50, 200);
-  fill(blueValue, redValue, greenValue);
-  rect(width / 4, height / 4, rectWidth, rectHeight);
+  // Draw a rectangle that moves inversely to the mouse
+  fill((255 - mouseX) % 255, (255 - mouseY) % 255, (mouseX * mouseY) % 255);
+  rect(width - mouseX, height - mouseY, 100, 50);
 
-  // Add an animated polygon that moves based on the mouse coordinates
-  fill(greenValue, blueValue, redValue);
-  drawPolygon(mouseX, mouseY, 60, 6);  // Hexagon centered at the mouse
-}
-
-// Helper function to draw a polygon
-void drawPolygon(float x, float y, float radius, int sides) {
-  beginShape();
-  for (int i = 0; i < sides; i++) {
-    float angle = TWO_PI / sides * i;
-    float px = x + cos(angle) * radius;
-    float py = y + sin(angle) * radius;
-    vertex(px, py);
+  // Draw a dynamic grid of small squares that change colors with the mouse
+  for (int i = 0; i < width; i += 50) {
+    for (int j = 0; j < height; j += 50) {
+      fill((i + mouseX) % 255, (j + mouseY) % 255, (i + j + mouseX + mouseY) % 255);
+      rect(i, j, 40, 40);
+    }
   }
-  endShape(CLOSE);
+
+  // Add a triangle that rotates based on the X position of the mouse
+  pushMatrix(); // Save current transformation state
+  translate(width / 2, height / 2); // Move to center of canvas
+  rotate(radians(mouseX % 360)); // Rotate based on mouseX
+  fill((mouseX * mouseY) % 255, (mouseY * mouseX) % 255, (mouseX + mouseY) % 200);
+  triangle(-50, -50, 50, -50, 0, 100); // Draw triangle
+  popMatrix(); // Restore original transformation state
 }
