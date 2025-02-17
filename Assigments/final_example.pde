@@ -1,14 +1,21 @@
 // Interactive Generative Project: Dynamic Field
 
 ArrayList<Particle> particles; // ArrayList to store particles
-String mode = "attract"; // Default interaction mode
-color bgColor = color(20); // Background color
-boolean isPaused = false; // Pause state
+String mode = "attract";         // Default interaction mode
+color bgColor = color(20);       // Background color
+boolean isPaused = false;        // Pause state
+
+// Constants for particle behavior
+final float ATTRACT_STRENGTH = 0.02;
+final float REPEL_STRENGTH   = -0.02;
+final float RANDOM_JITTER    = 0.5;
+final float DAMPING          = 0.95;
 
 void setup() {
   size(800, 600);
-  particles = new ArrayList<Particle>(); // Initialize particle system
-  background(bgColor); // Set initial background
+  particles = new ArrayList<Particle>();
+  background(bgColor);
+  noStroke();
 }
 
 void draw() {
@@ -23,84 +30,86 @@ void draw() {
     }
   }
 
-  // Display current mode on screen
+  // Display current mode and instructions on screen
   fill(255);
   textSize(16);
   text("Mode: " + mode + " | Press 'r' to reset | Space to pause", 10, height - 20);
 }
 
-// Particle class definition
 class Particle {
-  float x, y;        // Position
-  float vx, vy;      // Velocity
-  float size;        // Size of the particle
-  color c;           // Color of the particle
+  float x, y;   // Position
+  float vx, vy; // Velocity
+  float size;   // Size of the particle
+  color c;      // Color of the particle
 
   Particle(float startX, float startY) {
     x = startX;
     y = startY;
-    vx = random(-2, 2); // Random initial velocity
+    vx = random(-2, 2);
     vy = random(-2, 2);
-    size = random(5, 15); // Random size
-    c = color(random(100, 255), random(100, 255), random(100, 255)); // Random color
+    size = random(5, 15);
+    c = color(random(100, 255), random(100, 255), random(100, 255));
   }
 
   void update() {
+    // Cache mouse difference values for efficiency
+    float dx = mouseX - x;
+    float dy = mouseY - y;
+
+    // Adjust velocity based on current mode
     if (mode.equals("attract")) {
-      // Move toward the mouse position
-      float attractionStrength = 0.02;
-      vx += (mouseX - x) * attractionStrength;
-      vy += (mouseY - y) * attractionStrength;
+      vx += dx * ATTRACT_STRENGTH;
+      vy += dy * ATTRACT_STRENGTH;
     } else if (mode.equals("repel")) {
-      // Move away from the mouse position
-      float repulsionStrength = -0.02;
-      vx += (mouseX - x) * repulsionStrength;
-      vy += (mouseY - y) * repulsionStrength;
+      vx += dx * REPEL_STRENGTH;
+      vy += dy * REPEL_STRENGTH;
     } else if (mode.equals("random")) {
-      // Add random jitter to velocity
-      vx += random(-0.5, 0.5);
-      vy += random(-0.5, 0.5);
+      vx += random(-RANDOM_JITTER, RANDOM_JITTER);
+      vy += random(-RANDOM_JITTER, RANDOM_JITTER);
     }
 
-    // Update position based on velocity
+    // Update position
     x += vx;
     y += vy;
 
-    // Dampen velocity slightly for smoother motion
-    vx *= 0.95;
-    vy *= 0.95;
+    // Apply damping for smoother motion
+    vx *= DAMPING;
+    vy *= DAMPING;
 
     // Wrap around screen edges for continuous motion
-    if (x < 0) x = width;
-    if (x > width) x = 0;
-    if (y < 0) y = height;
-    if (y > height) y = 0;
+    if (x < 0) {
+      x = width;
+    } else if (x > width) {
+      x = 0;
+    }
+    if (y < 0) {
+      y = height;
+    } else if (y > height) {
+      y = 0;
+    }
   }
 
   void display() {
-    noStroke();
     fill(c);
-    ellipse(x, y, size, size); // Draw particle as a circle
+    ellipse(x, y, size, size);
   }
 }
 
-// Mouse interaction: Add particles on click or drag
 void mouseDragged() {
   particles.add(new Particle(mouseX, mouseY));
 }
 
-// Keyboard interaction: Change modes or reset canvas
 void keyPressed() {
   if (key == 'r') {
-    particles.clear(); // Clear all particles
-    background(bgColor); // Reset background
+    particles.clear();
+    background(bgColor);
   } else if (key == ' ') {
-    isPaused = !isPaused; // Toggle pause state
+    isPaused = !isPaused;
   } else if (key == '1') {
-    mode = "attract"; // Switch to attract mode
+    mode = "attract";
   } else if (key == '2') {
-    mode = "repel"; // Switch to repel mode
+    mode = "repel";
   } else if (key == '3') {
-    mode = "random"; // Switch to random motion mode
+    mode = "random";
   }
 }
