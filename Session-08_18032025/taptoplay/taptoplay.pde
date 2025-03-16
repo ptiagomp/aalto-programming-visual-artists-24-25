@@ -19,7 +19,7 @@ void setup() {
   size(800, 600); // Set window size
   
   // Load video from file (ensure it's inside the "data" folder)
-  myVideo = new Movie(this, "your_video.mp4");
+  myVideo = new Movie(this, "test.mp4");
   
   myVideo.loop();  // Enable looping (video will restart after finishing)
   myVideo.pause(); // Start with video paused (waiting for first clap)
