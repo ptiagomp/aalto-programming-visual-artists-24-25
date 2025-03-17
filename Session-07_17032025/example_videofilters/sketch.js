@@ -1,3 +1,6 @@
+// This is the code for the magnifying glass effect on a video using p5.js.
+
+
 let video;
 let invertEffect = false;
 let grayscaleEffect = false;
