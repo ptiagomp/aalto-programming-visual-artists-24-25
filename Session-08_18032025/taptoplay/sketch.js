@@ -1,7 +1,5 @@
 //this code is for the video to play when the user taps on the screen
 //audio is used to detect the taps
-//the video will pause when the user taps again
-//the video will loop when it reaches the end
 
 let mic; // Microphone input
 let video; // Video element
